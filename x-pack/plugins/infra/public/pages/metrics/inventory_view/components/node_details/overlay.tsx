@@ -14,6 +14,7 @@ import { EuiIcon, EuiButtonIcon } from '@elastic/eui';
 import { euiStyled } from '@kbn/kibana-react-plugin/common';
 import { useKibana } from '@kbn/kibana-react-plugin/public';
 import { useLinkProps } from '@kbn/observability-shared-plugin/public';
+import moment from 'moment';
 import { InfraWaffleMapNode, InfraWaffleMapOptions } from '../../../../../lib/lib';
 import { InventoryItemType } from '../../../../../../common/inventory_models/types';
 import { MetricsTab } from './tabs/metrics/metrics';
@@ -83,8 +84,8 @@ export const NodeContextPopover = ({
       nodeType,
       nodeId: node.id,
       search: {
-        from: nodeDetailFrom,
-        to: currentTime,
+        from: moment(nodeDetailFrom).toISOString(),
+        to: moment(currentTime).toISOString(),
         assetName: node.name,
       },
     }),

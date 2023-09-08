@@ -70,7 +70,6 @@ export const ChartSectionVis = ({
         onChangeRangeTime({
           from: moment(from).toISOString(),
           to: moment(to).toISOString(),
-          interval: '>=1m',
         });
       }
     },

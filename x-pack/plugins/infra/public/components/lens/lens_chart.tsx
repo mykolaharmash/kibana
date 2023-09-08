@@ -31,6 +31,7 @@ export const LensChart = ({
   lastReloadRequestTime,
   query,
   onBrushEnd,
+  onFilter,
   overrides,
   toolTip,
   disableTriggers = false,
@@ -70,6 +71,7 @@ export const LensChart = ({
       query={query}
       overrides={overrides}
       onBrushEnd={onBrushEnd}
+      onFilter={onFilter}
       hidePanelTitles={hidePanelTitles}
     />
   );
@@ -87,7 +89,7 @@ export const LensChart = ({
         })}
         anchorClassName="eui-fullWidth"
       >
-        {/* EuiToolTip forwards some event handlers to the child component. 
+        {/* EuiToolTip forwards some event handlers to the child component.
         Wrapping Lens inside a div prevents that from causing unnecessary re-renders  */}
         <div>{Lens}</div>
       </EuiToolTip>

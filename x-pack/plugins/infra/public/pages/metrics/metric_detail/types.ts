@@ -7,13 +7,13 @@
 
 import rt from 'io-ts';
 import { EuiTheme } from '@kbn/kibana-react-plugin/common';
+import type { TimeRange } from '@kbn/es-query';
 import { InventoryFormatterTypeRT } from '../../../../common/inventory_models/types';
-import { MetricsTimeInput } from './hooks/use_metrics_time';
 import { NodeDetailsMetricData } from '../../../../common/http_api/node_details_api';
 
 export interface LayoutProps {
   metrics?: NodeDetailsMetricData[];
-  onChangeRangeTime?: (time: MetricsTimeInput) => void;
+  onChangeRangeTime?: (time: TimeRange) => void;
   isLiveStreaming?: boolean;
   stopLiveStreaming?: () => void;
 }
@@ -57,7 +57,7 @@ export const VisSectionPropsRT = rt.partial({
 export type VisSectionProps = rt.TypeOf<typeof VisSectionPropsRT> & {
   id?: string;
   metric?: NodeDetailsMetricData;
-  onChangeRangeTime?: (time: MetricsTimeInput) => void;
+  onChangeRangeTime?: (time: TimeRange) => void;
   isLiveStreaming?: boolean;
   stopLiveStreaming?: () => void;
 };

@@ -16,7 +16,10 @@ import { useUnifiedSearchContext } from '../../../hooks/use_unified_search';
 import { useAlertsQuery } from '../../../hooks/use_alerts_query';
 import AlertsStatusFilter from './alerts_status_filter';
 import { ALERTS_PER_PAGE, ALERTS_TABLE_ID, infraAlertFeatureIds } from '../config';
-import { HostsState, HostsStateUpdater } from '../../../hooks/use_unified_search_url_state';
+import {
+  UnifiedSearchStorageState,
+  UnifiedSearchStorageStatePayload,
+} from '../../../hooks/use_unified_search_url_state';
 
 export const AlertsTabContent = () => {
   const { services } = useKibanaContextForPlugin();
@@ -67,8 +70,8 @@ export const AlertsTabContent = () => {
 
 interface MemoAlertSummaryWidgetProps {
   alertsQuery: AlertsEsQuery;
-  dateRange: HostsState['dateRange'];
-  onRangeSelection: HostsStateUpdater;
+  dateRange: UnifiedSearchStorageState['dateRange'];
+  onRangeSelection: (params: UnifiedSearchStorageStatePayload) => void;
 }
 
 const MemoAlertSummaryWidget = React.memo(

@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import dateMath from '@kbn/datemath';
 import moment from 'moment';
 import { EuiFlexGroup, EuiFlexItem } from '@elastic/eui';
+import type { TimeRange } from '@kbn/es-query';
 import { useTemplateHeaderBreadcrumbs } from '../../../../components/asset_details/hooks/use_page_header';
 import { useSourceContext } from '../../../../containers/metrics_source';
 import { InventoryMetric, InventoryItemType } from '../../../../../common/inventory_models/types';
@@ -17,7 +18,6 @@ import { MetricsSideNav } from './side_nav';
 import { MetricsTimeControls } from './time_controls';
 import { SideNavContext, NavItem } from '../lib/side_nav_context';
 import { PageBody } from './page_body';
-import { MetricsTimeInput } from '../hooks/use_metrics_time';
 import { InfraMetadata } from '../../../../../common/http_api/metadata_api';
 import { PageError } from './page_error';
 import { MetadataContext } from '../containers/metadata_context';
@@ -30,7 +30,7 @@ interface Props {
   cloudId: string;
   nodeType: InventoryItemType;
   sourceId: string;
-  timeRange: MetricsTimeInput;
+  timeRange: TimeRange;
   metadataLoading: boolean;
   isAutoReloading: boolean;
   refreshInterval: number;
@@ -40,18 +40,20 @@ interface Props {
   setRefreshInterval(refreshInterval: number): void;
   setAutoReload(isAutoReloading: boolean): void;
   triggerRefresh(): void;
-  setTimeRange(timeRange: MetricsTimeInput): void;
+  setTimeRange(timeRange: TimeRange): void;
 }
 
-const parseRange = (range: MetricsTimeInput) => {
-  const parsedFrom = dateMath.parse(range.from.toString());
-  const parsedTo = dateMath.parse(range.to.toString(), { roundUp: true });
+const parseRange = (range: TimeRange) => {
+  const parsedFrom = dateMath.parse(range.from);
+  const parsedTo = dateMath.parse(range.to, { roundUp: true });
+
   return {
-    ...range,
     from: (parsedFrom && parsedFrom.valueOf()) || moment().subtract(1, 'hour').valueOf(),
     to: (parsedTo && parsedTo.valueOf()) || moment().valueOf(),
   };
 };
+
+const DEFAULT_INTERVAL = '>=1m';
 
 export const NodeDetailsPage = (props: Props) => {
   const { metricIndicesExist } = useSourceContext();
@@ -62,7 +64,7 @@ export const NodeDetailsPage = (props: Props) => {
     props.nodeId,
     props.nodeType,
     props.sourceId,
-    parsedTimeRange,
+    { ...parsedTimeRange, interval: DEFAULT_INTERVAL },
     props.cloudId
   );
 

@@ -14,8 +14,8 @@ import type { RouteState } from '../../components/asset_details/types';
 import { useKibanaContextForPlugin } from '../../hooks/use_kibana';
 
 interface QueryParams {
-  from?: number;
-  to?: number;
+  from?: string;
+  to?: string;
   assetName?: string;
 }
 
@@ -45,12 +45,7 @@ export const useNodeDetailsRedirect = () => {
         pathname: `link-to/${nodeType}-detail/${nodeId}`,
         search: {
           ...rest,
-          ...(to && from
-            ? {
-                to: `${to}`,
-                from: `${from}`,
-              }
-            : undefined),
+          ...(to && from ? { to, from } : undefined),
           // While we don't have a shared state between all page in infra, this makes it possible to restore a page state when returning to the previous route
           ...(location.search || location.pathname
             ? {

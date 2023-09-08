@@ -22,7 +22,6 @@ describe('useMetricsTime hook', () => {
       const hookValue = getLastHookValue();
       expect(hookValue).toHaveProperty('from');
       expect(hookValue).toHaveProperty('to');
-      expect(hookValue.interval).toBe('>=1m');
     });
 
     it('can be updated', () => {

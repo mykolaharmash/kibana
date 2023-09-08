@@ -89,22 +89,16 @@ export const useTemplateHeaderBreadcrumbs = () => {
 };
 
 const useRightSideItems = (links?: LinkOptions[]) => {
-  const { getDateRangeInTimestamp } = useDateRangeProviderContext();
+  const { dateRange } = useDateRangeProviderContext();
   const { asset, assetType, overrides } = useAssetDetailsRenderPropsContext();
 
   const topCornerLinkComponents: Record<LinkOptions, JSX.Element> = useMemo(
     () => ({
-      nodeDetails: (
-        <LinkToNodeDetails
-          asset={asset}
-          assetType={assetType}
-          dateRangeTimestamp={getDateRangeInTimestamp()}
-        />
-      ),
+      nodeDetails: <LinkToNodeDetails asset={asset} assetType={assetType} dateRange={dateRange} />,
       alertRule: <LinkToAlertsRule onClick={overrides?.alertRule?.onCreateRuleClick} />,
       apmServices: <LinkToApmServices assetName={asset.name} apmField={APM_HOST_FILTER_FIELD} />,
     }),
-    [asset, assetType, getDateRangeInTimestamp, overrides?.alertRule?.onCreateRuleClick]
+    [asset, assetType, dateRange, overrides?.alertRule?.onCreateRuleClick]
   );
 
   const rightSideItems = useMemo(

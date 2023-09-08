@@ -5,8 +5,7 @@
  * 2.0.
  */
 
-import { useReducer } from 'react';
-import deepEqual from 'fast-deep-equal';
+import { useCallback, useEffect } from 'react';
 import * as rt from 'io-ts';
 import { pipe } from 'fp-ts/lib/pipeable';
 import { fold } from 'fp-ts/lib/Either';
@@ -29,7 +28,7 @@ const DEFAULT_QUERY = {
 const DEFAULT_FROM_MINUTES_VALUE = 15;
 const INITIAL_DATE_RANGE = { from: `now-${DEFAULT_FROM_MINUTES_VALUE}m`, to: 'now' };
 
-const INITIAL_HOSTS_STATE: HostsState = {
+const INITIAL_STORAGE_STATE: UnifiedSearchStorageState = {
   query: DEFAULT_QUERY,
   filters: [],
   panelFilters: [],
@@ -37,27 +36,23 @@ const INITIAL_HOSTS_STATE: HostsState = {
   limit: DEFAULT_HOST_LIMIT,
 };
 
-const reducer = (prevState: HostsState, params: HostsSearchPayload) => {
-  const payload = Object.fromEntries(Object.entries(params).filter(([_, v]) => !!v));
+type SetUnifiedSearchUrlState = (payload: UnifiedSearchStorageStatePayload | null) => void;
 
-  return {
-    ...prevState,
-    ...payload,
-  };
-};
-
-export const useHostsUrlState = (): [HostsState, HostsStateUpdater] => {
+export const useUnifiedSearchStorageState = (): [
+  UnifiedSearchStorageState,
+  SetUnifiedSearchUrlState
+] => {
   const [getTime] = useKibanaTimefilterTime(INITIAL_DATE_RANGE);
   const [localStorageHostLimit, setLocalStorageHostLimit] = useLocalStorage<number>(
     LOCAL_STORAGE_HOST_LIMIT_KEY,
-    INITIAL_HOSTS_STATE.limit
+    INITIAL_STORAGE_STATE.limit
   );
 
-  const [urlState, setUrlState] = useUrlState<HostsState>({
+  const [urlState, setUrlState] = useUrlState<UnifiedSearchStorageState>({
     defaultState: {
-      ...INITIAL_HOSTS_STATE,
+      ...INITIAL_STORAGE_STATE,
       dateRange: getTime(),
-      limit: localStorageHostLimit ?? INITIAL_HOSTS_STATE.limit,
+      limit: localStorageHostLimit ?? INITIAL_STORAGE_STATE.limit,
     },
     decodeUrlState,
     encodeUrlState,
@@ -65,19 +60,26 @@ export const useHostsUrlState = (): [HostsState, HostsStateUpdater] => {
     writeDefaultState: true,
   });
 
-  const [search, setSearch] = useReducer(reducer, urlState);
-  if (!deepEqual(search, urlState)) {
-    setUrlState(search);
-    if (localStorageHostLimit !== search.limit) {
-      setLocalStorageHostLimit(search.limit);
-    }
-  }
-
-  useSyncKibanaTimeFilterTime(INITIAL_DATE_RANGE, urlState.dateRange, (dateRange) =>
-    setSearch({ dateRange })
+  const setUnifiedSearchStorageState = useCallback(
+    (params: UnifiedSearchStorageStatePayload | null) => {
+      if (!params) {
+        setUrlState(INITIAL_STORAGE_STATE);
+      } else {
+        setUrlState({ ...urlState, ...params });
+      }
+    },
+    [setUrlState, urlState]
   );
 
-  return [search, setSearch];
+  useEffect(() => {
+    setLocalStorageHostLimit(urlState.limit);
+  }, [setLocalStorageHostLimit, urlState.limit]);
+
+  useSyncKibanaTimeFilterTime(INITIAL_DATE_RANGE, urlState.dateRange, (dateRange) => {
+    setUrlState({ ...urlState, dateRange });
+  });
+
+  return [urlState, setUnifiedSearchStorageState];
 };
 
 const HostsFilterRT = rt.intersection([
@@ -119,7 +121,7 @@ const StringDateRangeRT = rt.intersection([
   rt.partial({ mode: rt.union([rt.literal('absolute'), rt.literal('relative')]) }),
 ]);
 
-const HostsStateRT = rt.type({
+const UnifiedSearchStorageStateRT = rt.type({
   filters: HostsFiltersRT,
   panelFilters: HostsFiltersRT,
   query: HostsQueryStateRT,
@@ -127,11 +129,9 @@ const HostsStateRT = rt.type({
   limit: rt.number,
 });
 
-export type HostsState = rt.TypeOf<typeof HostsStateRT>;
+export type UnifiedSearchStorageState = rt.TypeOf<typeof UnifiedSearchStorageStateRT>;
 
-export type HostsSearchPayload = Partial<HostsState>;
-
-export type HostsStateUpdater = (params: HostsSearchPayload) => void;
+export type UnifiedSearchStorageStatePayload = Partial<UnifiedSearchStorageState>;
 
 export type StringDateRange = rt.TypeOf<typeof StringDateRangeRT>;
 export interface StringDateRangeTimestamp {
@@ -139,7 +139,7 @@ export interface StringDateRangeTimestamp {
   to: number;
 }
 
-const encodeUrlState = HostsStateRT.encode;
+const encodeUrlState = UnifiedSearchStorageStateRT.encode;
 const decodeUrlState = (value: unknown) => {
-  return pipe(HostsStateRT.decode(value), fold(constant(undefined), identity));
+  return pipe(UnifiedSearchStorageStateRT.decode(value), fold(constant(undefined), identity));
 };

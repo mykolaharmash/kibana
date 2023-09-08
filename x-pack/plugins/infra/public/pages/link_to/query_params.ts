@@ -20,13 +20,11 @@ export const getFilterFromLocation = (location: Location) => {
 };
 
 export const getToFromLocation = (location: Location) => {
-  const timeParam = getParamFromQueryString(getQueryStringFromLocation(location), 'to');
-  return timeParam ? parseFloat(timeParam) : NaN;
+  return getParamFromQueryString(getQueryStringFromLocation(location), 'to') ?? '';
 };
 
 export const getFromFromLocation = (location: Location) => {
-  const timeParam = getParamFromQueryString(getQueryStringFromLocation(location), 'from');
-  return timeParam ? parseFloat(timeParam) : NaN;
+  return getParamFromQueryString(getQueryStringFromLocation(location), 'from') ?? '';
 };
 
 export const getNodeNameFromLocation = (location: Location) => {

@@ -21,7 +21,7 @@ jest.mock('../../../../utils/use_kibana_ui_setting', () => ({
 import React from 'react';
 import { MetricsTimeControls } from './time_controls';
 import { mount } from 'enzyme';
-import { MetricsTimeInput } from '../hooks/use_metrics_time';
+import type { TimeRange } from '@kbn/es-query';
 
 describe('MetricsTimeControls', () => {
   it('should set a valid from and to value for Today', () => {
@@ -30,7 +30,7 @@ describe('MetricsTimeControls', () => {
       to: 'now',
       interval: '>=1m',
     };
-    const handleTimeChange = jest.fn().mockImplementation((time: MetricsTimeInput) => void 0);
+    const handleTimeChange = jest.fn().mockImplementation((time: TimeRange) => void 0);
     const handleRefreshChange = jest.fn().mockImplementation((refreshInterval: number) => void 0);
     const handleAutoReload = jest.fn().mockImplementation((isAutoReloading: boolean) => void 0);
     const handleOnRefresh = jest.fn().mockImplementation(() => void 0);

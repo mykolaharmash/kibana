@@ -13,27 +13,26 @@ import * as rt from 'io-ts';
 import { pipe } from 'fp-ts/lib/pipeable';
 import { fold } from 'fp-ts/lib/Either';
 import { constant, identity } from 'fp-ts/lib/function';
+import type { TimeRange } from '@kbn/es-query';
 import { replaceStateKeyInQueryString } from '../../../../../common/url_state_storage_service';
 import { useUrlState } from '../../../../utils/use_url_state';
 
-const parseRange = (range: MetricsTimeInput) => {
-  const parsedFrom = dateMath.parse(range.from.toString());
-  const parsedTo = dateMath.parse(range.to.toString(), { roundUp: true });
+const parseRange = (range: TimeRange) => {
+  const parsedFrom = dateMath.parse(range.from);
+  const parsedTo = dateMath.parse(range.to, { roundUp: true });
   return {
-    ...range,
     from: (parsedFrom && parsedFrom.valueOf()) || moment().subtract(1, 'hour').valueOf(),
     to: (parsedTo && parsedTo.valueOf()) || moment().valueOf(),
   };
 };
 
-const DEFAULT_TIMERANGE: MetricsTimeInput = {
+const DEFAULT_TIME_RANGE: TimeRange = {
   from: 'now-1h',
   to: 'now',
-  interval: '>=1m',
 };
 
 const DEFAULT_URL_STATE: MetricsTimeUrlState = {
-  time: DEFAULT_TIMERANGE,
+  time: DEFAULT_TIME_RANGE,
   autoReload: false,
   refreshInterval: 5000,
 };
@@ -49,7 +48,10 @@ export const useMetricsTime = () => {
   const [isAutoReloading, setAutoReload] = useState(urlState.autoReload || false);
   const [refreshInterval, setRefreshInterval] = useState(urlState.refreshInterval || 5000);
   const [lastRefresh, setLastRefresh] = useState<number>(moment().valueOf());
-  const [timeRange, setTimeRange] = useState({ ...DEFAULT_TIMERANGE, ...urlState.time });
+  const [timeRange, setTimeRange] = useState<TimeRange>({
+    ...DEFAULT_TIME_RANGE,
+    ...urlState.time,
+  });
 
   useEffect(() => {
     const newState = {
@@ -61,10 +63,10 @@ export const useMetricsTime = () => {
   }, [isAutoReloading, refreshInterval, setUrlState, timeRange]);
 
   const [parsedTimeRange, setParsedTimeRange] = useState(
-    parseRange(urlState.time || DEFAULT_TIMERANGE)
+    parseRange(urlState.time || DEFAULT_TIME_RANGE)
   );
 
-  const updateTimeRange = useCallback((range: MetricsTimeInput, parseDate = true) => {
+  const updateTimeRange = useCallback((range: TimeRange, parseDate = true) => {
     setTimeRange(range);
     if (parseDate) {
       setParsedTimeRange(parseRange(range));
@@ -86,15 +88,11 @@ export const useMetricsTime = () => {
   };
 };
 
-export const MetricsTimeInputRT = rt.type({
-  from: rt.union([rt.string, rt.number]),
-  to: rt.union([rt.string, rt.number]),
-  interval: rt.string,
-});
-export type MetricsTimeInput = rt.TypeOf<typeof MetricsTimeInputRT>;
-
 export const MetricsTimeUrlStateRT = rt.partial({
-  time: MetricsTimeInputRT,
+  time: rt.type({
+    from: rt.string,
+    to: rt.string,
+  }),
   autoReload: rt.boolean,
   refreshInterval: rt.number,
 });
@@ -104,17 +102,11 @@ const encodeUrlState = MetricsTimeUrlStateRT.encode;
 const decodeUrlState = (value: unknown) =>
   pipe(MetricsTimeUrlStateRT.decode(value), fold(constant(undefined), identity));
 
-export const replaceMetricTimeInQueryString = (from: number, to: number) =>
-  Number.isNaN(from) || Number.isNaN(to)
-    ? (value: string) => value
-    : replaceStateKeyInQueryString<MetricsTimeUrlState>('_a', {
-        autoReload: false,
-        time: {
-          interval: '>=1m',
-          from: moment(from).toISOString(),
-          to: moment(to).toISOString(),
-        },
-      });
+export const replaceMetricTimeInQueryString = (from: string, to: string) =>
+  replaceStateKeyInQueryString<MetricsTimeUrlState>('_a', {
+    autoReload: false,
+    time: { from, to },
+  });
 
 export const MetricsTimeContainer = createContainer(useMetricsTime);
 export const [MetricsTimeProvider, useMetricsTimeContext] = MetricsTimeContainer;

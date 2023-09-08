@@ -17,15 +17,15 @@ import { useKibanaContextForPlugin } from '../../../../hooks/use_kibana';
 import { telemetryTimeRangeFormatter } from '../../../../../common/formatters/telemetry_time_range';
 import { useMetricsDataViewContext } from './use_data_view';
 import {
-  HostsSearchPayload,
-  useHostsUrlState,
-  type HostsState,
+  UnifiedSearchStorageStatePayload,
+  useUnifiedSearchStorageState,
+  type UnifiedSearchStorageState,
   type StringDateRangeTimestamp,
 } from './use_unified_search_url_state';
 import { retrieveFieldsFromFilter } from '../../../../utils/filters/build';
 
 const buildQuerySubmittedPayload = (
-  hostState: HostsState & { parsedDateRange: StringDateRangeTimestamp }
+  hostState: UnifiedSearchStorageState & { parsedDateRange: StringDateRangeTimestamp }
 ) => {
   const { panelFilters, filters, parsedDateRange, query: queryObj, limit } = hostState;
 
@@ -51,7 +51,7 @@ const getDefaultTimestamps = () => {
 
 export const useUnifiedSearch = () => {
   const [error, setError] = useState<Error | null>(null);
-  const [searchCriteria, setSearch] = useHostsUrlState();
+  const [searchCriteria, setSearch] = useUnifiedSearchStorageState();
   const { dataView } = useMetricsDataViewContext();
   const { services } = useKibanaContextForPlugin();
   const kibanaQuerySettings = useKibanaQuerySettings();
@@ -75,10 +75,10 @@ export const useUnifiedSearch = () => {
   );
 
   const onSubmit = useCallback(
-    (params?: HostsSearchPayload) => {
+    (params?: UnifiedSearchStorageStatePayload) => {
       try {
         setError(null);
-        /* 
+        /*
         / Validates the Search Bar input values before persisting them in the state.
         / Since the search can be triggered by components that are unaware of the Unified Search state (e.g Controls and Host Limit),
         / this will always validates the query bar value, regardless of whether it's been sent in the current event or not.
@@ -86,7 +86,7 @@ export const useUnifiedSearch = () => {
         validateQuery(params?.query ?? (queryStringService.getQuery() as Query));
         setSearch(params ?? {});
       } catch (err) {
-        /* 
+        /*
         / Persists in the state the params so they can be used in case the query bar is fixed by the user.
         / This is needed because the Unified Search observables are unnaware of the other componets in the search bar.
         / Invalid query isn't persisted because it breaks the Control component

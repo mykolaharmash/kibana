@@ -8,11 +8,11 @@
 import React from 'react';
 
 import { useSourceContext } from '../../../../../containers/metrics_source';
-import { useUnifiedSearchContext } from '../../hooks/use_unified_search';
 import type { HostNodeRow } from '../../hooks/use_hosts_table';
 import { AssetDetails } from '../../../../../components/asset_details/asset_details';
 import { orderedFlyoutTabs } from './tabs';
 import { useAssetDetailsUrlState } from '../../../../../components/asset_details/hooks/use_asset_details_url_state';
+import { useUnifiedSearchStorageState } from '../../hooks/use_unified_search_url_state';
 
 export interface Props {
   node: HostNodeRow;
@@ -21,14 +21,14 @@ export interface Props {
 
 export const FlyoutWrapper = ({ node: { name }, closeFlyout }: Props) => {
   const { source } = useSourceContext();
-  const { parsedDateRange } = useUnifiedSearchContext();
+  const [{ dateRange }] = useUnifiedSearchStorageState();
   const [urlState] = useAssetDetailsUrlState();
 
   return source ? (
     <AssetDetails
       asset={{ id: name, name }}
       assetType="host"
-      dateRange={urlState?.dateRange ?? parsedDateRange}
+      dateRange={urlState?.dateRange ?? dateRange}
       overrides={{
         metadata: {
           showActionsColumn: true,

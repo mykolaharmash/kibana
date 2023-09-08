@@ -9,15 +9,15 @@ import { EuiSuperDatePicker, OnRefreshChangeProps, OnTimeChangeProps } from '@el
 import React, { useCallback } from 'react';
 import { UI_SETTINGS } from '@kbn/data-plugin/public';
 import { euiStyled } from '@kbn/kibana-react-plugin/common';
-import { MetricsTimeInput } from '../hooks/use_metrics_time';
+import type { TimeRange } from '@kbn/es-query';
 import { useKibanaUiSetting } from '../../../../utils/use_kibana_ui_setting';
 import { mapKibanaQuickRangesToDatePickerRanges } from '../../../../utils/map_timepicker_quickranges_to_datepicker_ranges';
 
 interface MetricsTimeControlsProps {
-  currentTimeRange: MetricsTimeInput;
+  currentTimeRange: TimeRange;
   isLiveStreaming?: boolean;
   refreshInterval?: number | null;
-  onChangeTimeRange: (time: MetricsTimeInput) => void;
+  onChangeTimeRange: (time: TimeRange) => void;
   setRefreshInterval: (refreshInterval: number) => void;
   setAutoReload: (isAutoReloading: boolean) => void;
   onRefresh: () => void;
@@ -42,7 +42,6 @@ export const MetricsTimeControls = (props: MetricsTimeControlsProps) => {
       onChangeTimeRange({
         from: start,
         to: end,
-        interval: '>=1m',
       });
     },
     [onChangeTimeRange]

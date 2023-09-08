@@ -5,13 +5,13 @@
  * 2.0.
  */
 
+import type { TimeRange } from '@kbn/es-query';
 import { i18n } from '@kbn/i18n';
 import React from 'react';
 import { NodeDetailsMetricData } from '../../../../../common/http_api/node_details_api';
 import { InventoryItemType } from '../../../../../common/inventory_models/types';
 import { NoData } from '../../../../components/empty_states';
 import { InfraLoadingPanel } from '../../../../components/loading';
-import { MetricsTimeInput } from '../hooks/use_metrics_time';
 import { Layout } from './layout';
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
   refetch: () => void;
   type: InventoryItemType;
   metrics: NodeDetailsMetricData[];
-  onChangeRangeTime: (time: MetricsTimeInput) => void;
+  onChangeRangeTime: (time: TimeRange) => void;
   isLiveStreaming: boolean;
   stopLiveStreaming: () => void;
 }

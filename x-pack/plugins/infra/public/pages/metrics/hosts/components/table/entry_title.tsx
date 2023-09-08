@@ -7,6 +7,7 @@
 import React from 'react';
 import { EuiFlexGroup, EuiFlexItem, EuiIcon, EuiLink, EuiToolTip, IconType } from '@elastic/eui';
 import { useLinkProps } from '@kbn/observability-shared-plugin/public';
+import type { TimeRange } from '@kbn/es-query';
 import { useNodeDetailsRedirect } from '../../../../link_to';
 import type { CloudProvider, HostNodeRow } from '../../hooks/use_hosts_table';
 
@@ -19,11 +20,11 @@ const cloudIcons: Record<CloudProvider, IconType> = {
 
 interface EntryTitleProps {
   onClick: () => void;
-  dateRangeTs: { from: number; to: number };
+  dateRange: TimeRange;
   title: HostNodeRow['title'];
 }
 
-export const EntryTitle = ({ onClick, dateRangeTs, title }: EntryTitleProps) => {
+export const EntryTitle = ({ onClick, dateRange, title }: EntryTitleProps) => {
   const { name, cloudProvider } = title;
   const { getNodeDetailUrl } = useNodeDetailsRedirect();
 
@@ -32,8 +33,8 @@ export const EntryTitle = ({ onClick, dateRangeTs, title }: EntryTitleProps) => 
       nodeId: name,
       nodeType: 'host',
       search: {
-        from: dateRangeTs.from,
-        to: dateRangeTs.to,
+        from: dateRange.from,
+        to: dateRange.to,
         assetName: name,
       },
     }),

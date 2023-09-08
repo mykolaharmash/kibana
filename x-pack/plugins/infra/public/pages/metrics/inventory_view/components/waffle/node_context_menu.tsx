@@ -21,6 +21,7 @@ import {
   ActionMenuDivider,
   useLinkProps,
 } from '@kbn/observability-shared-plugin/public';
+import moment from 'moment';
 import { useKibanaContextForPlugin } from '../../../../../hooks/use_kibana';
 import { AlertFlyout } from '../../../../../alerting/inventory/components/alert_flyout';
 import { InfraWaffleMapNode, InfraWaffleMapOptions } from '../../../../../lib/lib';
@@ -81,8 +82,8 @@ export const NodeContextMenu: React.FC<Props & { theme?: EuiTheme }> = withTheme
         nodeType,
         nodeId: node.id,
         search: {
-          from: nodeDetailFrom,
-          to: currentTime,
+          from: moment(nodeDetailFrom).toISOString(),
+          to: moment(currentTime).toISOString(),
           assetName: node.name,
         },
       }),

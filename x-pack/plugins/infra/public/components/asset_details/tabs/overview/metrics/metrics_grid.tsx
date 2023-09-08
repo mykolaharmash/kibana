@@ -11,6 +11,7 @@ import type { DataView } from '@kbn/data-views-plugin/public';
 import type { TimeRange } from '@kbn/es-query';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { LensEmbeddableInput } from '@kbn/lens-plugin/public';
+import { MultiValueClickContext } from '@kbn/embeddable-plugin/public';
 import {
   assetDetailsDashboards,
   XY_MISSING_VALUE_DOTTED_LINE_CONFIG,
@@ -23,6 +24,7 @@ import type { DataViewOrigin } from '../../../types';
 import { useDateRangeProviderContext } from '../../../hooks/use_date_range';
 
 type BrushEndArgs = Parameters<NonNullable<LensEmbeddableInput['onBrushEnd']>>[0];
+type FilterArgs = Parameters<NonNullable<LensEmbeddableInput['onFilter']>>[0];
 
 interface Props {
   nodeName: string;
@@ -67,6 +69,22 @@ export const MetricsGrid = React.memo(
       [setDateRange]
     );
 
+    const handleFilter = useCallback(
+      ({ data, preventDefault }: { data: MultiValueClickContext['data']['data'] }) => {
+        const row = data[0]?.cells[0].row;
+        const x = data[0]?.table.rows[row].x_date_histogram;
+
+        console.log(x);
+        // setDateRange({
+        //   from: new Date(range[0]).toISOString(),
+        //   to: new Date(range[1]).toISOString(),
+        // });
+
+        preventDefault();
+      },
+      []
+    );
+
     return (
       <EuiFlexGroup gutterSize="m" direction="column">
         <EuiFlexItem grow={false}>
@@ -97,6 +115,7 @@ export const MetricsGrid = React.memo(
                   overrides={overrides}
                   visualizationType="lnsXY"
                   onBrushEnd={handleBrushEnd}
+                  onFilter={handleFilter}
                 />
               </EuiFlexItem>
             ))}

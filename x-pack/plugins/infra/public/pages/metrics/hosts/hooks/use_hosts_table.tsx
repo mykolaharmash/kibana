@@ -31,7 +31,7 @@ import { ColumnHeader } from '../components/table/column_header';
 import { TABLE_COLUMN_LABEL } from '../translations';
 import { METRICS_TOOLTIP } from '../../../../common/visualizations';
 import { buildCombinedHostsFilter } from '../../../../utils/filters/build';
-import { useUnifiedSearchContext } from './use_unified_search';
+import { useUnifiedSearchStorageState } from './use_unified_search_url_state';
 
 /**
  * Columns and items types
@@ -127,7 +127,7 @@ const sortTableData =
 export const useHostsTable = () => {
   const [selectedItems, setSelectedItems] = useState<HostNodeRow[]>([]);
   const { hostNodes } = useHostsViewContext();
-  const { getDateRangeAsTimestamp } = useUnifiedSearchContext();
+  const [{ dateRange }] = useUnifiedSearchStorageState();
   const [{ detailsItemId, pagination, sorting }, setProperties] = useHostsTableUrlState();
   const {
     services: {
@@ -236,7 +236,7 @@ export const useHostsTable = () => {
         render: (title: HostNodeRow['title']) => (
           <EntryTitle
             title={title}
-            dateRangeTs={getDateRangeAsTimestamp()}
+            dateRange={dateRange}
             onClick={() => reportHostEntryClick(title)}
           />
         ),
@@ -343,7 +343,7 @@ export const useHostsTable = () => {
         width: '120px',
       },
     ],
-    [detailsItemId, getDateRangeAsTimestamp, reportHostEntryClick, setProperties]
+    [dateRange, detailsItemId, reportHostEntryClick, setProperties]
   );
 
   const selection: EuiTableSelectionType<HostNodeRow> = {
