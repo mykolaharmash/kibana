@@ -81,7 +81,11 @@ const createFlowRoute = createObservabilityOnboardingServerRoute({
         name: t.string,
       }),
       t.type({
-        type: t.union([t.literal('logFiles'), t.literal('systemLogs')]),
+        type: t.union([
+          t.literal('logFiles'),
+          t.literal('systemLogs'),
+          t.literal('nginx'),
+        ]),
       }),
       t.partial({
         state: t.record(t.string, t.unknown),

@@ -5,8 +5,10 @@
  * 2.0.
  */
 
+import { generate } from 'fast-glob/out/managers/tasks';
 import * as t from 'io-ts';
 import { v4 as uuidv4 } from 'uuid';
+import { generateNginxLogsYml } from '../../../common/elastic_agent_logs/nginx_logs/generate_nginx_logs_yml';
 import {
   generateSystemLogsYml,
   generateCustomLogsYml,
@@ -46,6 +48,17 @@ const generateConfig = createObservabilityOnboardingServerRoute({
       savedObjectsClient,
       savedObjectId: onboardingId,
     });
+
+    if (savedState?.type === 'nginx') {
+      return generateNginxLogsYml({
+        ...savedState?.state,
+        apiKey: authApiKey
+          ? `${authApiKey?.apiKeyId}:${authApiKey?.apiKey}`
+          : '$API_KEY',
+        esHost: elasticsearchUrl,
+        uuid: uuidv4(),
+      });
+    }
 
     const yaml =
       savedState?.type === 'systemLogs'

@@ -10,6 +10,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { customLogsRoutes } from '../components/app/custom_logs';
 import { systemLogsRoutes } from '../components/app/system_logs';
+import { nginxRoutes } from '../components/app/nginx';
 import { Home } from '../components/app/home';
 
 export type RouteParams<T extends keyof typeof routes> = DecodeParams<
@@ -44,4 +45,5 @@ export const routes = {
   ...baseRoutes,
   ...customLogsRoutes,
   ...systemLogsRoutes,
+  ...nginxRoutes,
 };

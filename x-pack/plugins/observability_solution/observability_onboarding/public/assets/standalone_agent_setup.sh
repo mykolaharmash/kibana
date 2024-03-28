@@ -63,7 +63,9 @@ updateStepProgress() {
   else
     data="{\"status\":\"${STATUS}\", \"message\":\"${MESSAGE}\", \"payload\":${PAYLOAD}}"
   fi
-  curl --request POST \
+  # "-k" is to ignore the self signed certificate verification
+  # to make it work locally. We need some way to make it optional.
+  curl -k --request POST \
     --url "${API_ENDPOINT}/flow/${ONBOARDING_ID}/step/${STEPNAME}" \
     --header "Authorization: ApiKey ${API_KEY_ENCODED}" \
     --header "Content-Type: application/json" \
@@ -153,7 +155,9 @@ fi
 downloadElasticAgentConfig() {
   echo "Downloading elastic-agent.yml"
   updateStepProgress "ea-config" "loading"
-  curl --request GET \
+  # "-k" is to ignore the self signed certificate verification
+  # to make it work locally. We need some way to make it optional.
+  curl -k --request GET \
     --url "${API_ENDPOINT}/elastic_agent/config?onboardingId=${ONBOARDING_ID}" \
     --header "Authorization: ApiKey ${API_KEY_ENCODED}" \
     --header "Content-Type: application/json" \

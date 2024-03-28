@@ -35,6 +35,8 @@ export async function getHasLogs({
     const index =
       type === 'logFiles'
         ? `logs-${(state as LogFilesState).datasetName}-${namespace}`
+        : type === 'nginx'
+        ? `logs-nginx.access-${namespace}`
         : [`logs-system.syslog-${namespace}`, `logs-system.auth-${namespace}`];
 
     const agentId = payload?.agentId;

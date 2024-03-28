@@ -27,6 +27,7 @@ import ReactDOM from 'react-dom';
 import { ConfigSchema } from '..';
 import { customLogsRoutes } from '../components/app/custom_logs';
 import { systemLogsRoutes } from '../components/app/system_logs';
+import { nginxRoutes } from '../components/app/nginx';
 import { ObservabilityOnboardingHeaderActionMenu } from '../components/app/header_action_menu';
 import {
   ObservabilityOnboardingPluginSetupDeps,
@@ -35,6 +36,7 @@ import {
 import { baseRoutes, routes } from '../routes';
 import { CustomLogs } from '../routes/templates/custom_logs';
 import { SystemLogs } from '../routes/templates/system_logs';
+import { Nginx } from '../routes/templates/nginx';
 
 export const onBoardingTitle = i18n.translate(
   'xpack.observability_onboarding.breadcrumbs.onboarding',
@@ -51,6 +53,7 @@ export const breadcrumbsApp = {
 function App() {
   const customLogRoutesPaths = Object.keys(customLogsRoutes);
   const systemLogRoutesPaths = Object.keys(systemLogsRoutes);
+  const nginxRoutesPaths = Object.keys(nginxRoutes);
 
   return (
     <>
@@ -105,6 +108,27 @@ function App() {
               );
             })}
           </SystemLogs>
+        </Route>
+
+        <Route exact path={nginxRoutesPaths}>
+          <Nginx>
+            {nginxRoutesPaths.map((key) => {
+              const path = key as keyof typeof routes;
+              const { handler, exact } = routes[path];
+              const Wrapper = () => {
+                return handler();
+              };
+
+              return (
+                <Route
+                  key={path}
+                  path={path}
+                  exact={exact}
+                  component={Wrapper}
+                />
+              );
+            })}
+          </Nginx>
         </Route>
       </Routes>
     </>

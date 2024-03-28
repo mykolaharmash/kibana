@@ -55,6 +55,9 @@ export function Home() {
   const handleClickSystemLogs = () => {
     navigateToKibanaUrl('/app/observabilityOnboarding/systemLogs');
   };
+  const handleClickNginx = () => {
+    navigateToKibanaUrl('/app/observabilityOnboarding/nginx');
+  };
   const handleClickCustomLogs = () => {
     navigateToKibanaUrl('/app/observabilityOnboarding/customLogs');
   };
@@ -158,6 +161,60 @@ export function Home() {
                 <EuiSpacer size="s" />
               </EuiCard>
             </EuiFlexItem>
+
+            <EuiFlexItem>
+              <EuiCard
+                icon={<EuiIcon type={nginxIcon} size="l" />}
+                betaBadgeProps={{
+                  'data-test-subj': 'obltOnboardingHomeQuickstartBadge-Nginx',
+                  color: 'accent',
+                  label: i18n.translate(
+                    'xpack.observability_onboarding.card.nginx.quickstartBadge',
+                    { defaultMessage: 'Quick start' }
+                  ),
+                }}
+                title={i18n.translate(
+                  'xpack.observability_onboarding.card.nginx.title',
+                  { defaultMessage: 'Nginx' }
+                )}
+                footer={
+                  <EuiButton
+                    onClick={handleClickNginx}
+                    color="primary"
+                    fill
+                    data-test-subj="obltOnboardingHomeStartNginx"
+                  >
+                    {getStartedLabel}
+                  </EuiButton>
+                }
+                style={{
+                  borderColor: euiTheme.colors.accent,
+                  borderWidth: 2,
+                }}
+                paddingSize="m"
+                display="plain"
+                hasBorder
+                onClick={handleClickNginx}
+              >
+                <EuiSpacer size="s" />
+                <EuiBadge color="hollow">{elasticAgentLabel}</EuiBadge>
+                <EuiSpacer size="m" />
+                <EuiText color="subdued" size="s" textAlign="center">
+                  <p>
+                    {i18n.translate(
+                      'xpack.observability_onboarding.card.nginx.description',
+                      {
+                        defaultMessage:
+                          'Collect logs from Nginx HTTP servers with Elastic Agent',
+                      }
+                    )}
+                  </p>
+                </EuiText>
+                <EuiSpacer size="s" />
+              </EuiCard>
+            </EuiFlexItem>
+
+
             <EuiFlexItem>
               <EuiCard
                 icon={<EuiIcon type={loggingIcon} size="l" />}

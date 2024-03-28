@@ -26,7 +26,7 @@ export interface ElasticAgentStepPayload {
   agentId: string;
 }
 
-export type ObservabilityOnboardingType = 'logFiles' | 'systemLogs';
+export type ObservabilityOnboardingType = 'logFiles' | 'systemLogs' | 'nginx';
 
 type ObservabilityOnboardingFlowState =
   | LogFilesState
