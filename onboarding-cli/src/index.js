@@ -12,8 +12,8 @@ import { dump } from 'js-yaml';
 import fs from 'node:fs';
 
 const agent = new https.Agent({ rejectUnauthorized: false });
-const API_HOST = "https://192.168.157.239:5601"
-const ES_HOST = "https://192.168.157.239:9200"
+const API_HOST = process.env.API_HOST;
+const ES_HOST = process.env.ES_HOST;
 const API_KEY = process.env.API_KEY;
 const ELASTIC_AGENT_ARTIFACT = "elastic-agent-8.13.2-linux-x86_64";
 const ELASTIC_AGENT_DOWNLOAD_URL = `https://artifacts.elastic.co/downloads/beats/elastic-agent/${ELASTIC_AGENT_ARTIFACT}.tar.gz`;
