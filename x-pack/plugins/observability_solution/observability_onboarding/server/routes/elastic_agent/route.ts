@@ -62,6 +62,13 @@ const generateConfig = createObservabilityOnboardingServerRoute({
   },
 });
 
+// const generateMultiConfig = createObservabilityOnboardingServerRoute({
+//   endpoint: 'POST /internal/observability_onboarding/elastic_agent/multi-config',
+//   body: t.patrial({
+//     integrationList
+//   })
+// })
+
 export const elasticAgentRouteRepository = {
   ...generateConfig,
 };

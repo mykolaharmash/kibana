@@ -18,6 +18,7 @@ import { OnboardingFlowForm } from './onboarding_flow_form/onboarding_flow_form'
 import { Header } from './header/header';
 import { SystemLogsPanel } from './quickstart_flows/system_logs';
 import { CustomLogsPanel } from './quickstart_flows/custom_logs';
+import { InstallElasticAgent } from './quickstart_flows/system_logs/install_elastic_agent';
 
 const queryClient = new QueryClient();
 
@@ -50,7 +51,8 @@ export function ExperimentalOnboardingFlow() {
             <CustomLogsPanel />
           </Route>
           <Route>
-            <OnboardingFlowForm />
+            <InstallElasticAgent />
+            {/* <OnboardingFlowForm /> */}
           </Route>
         </Routes>
         <EuiSpacer size="xl" />

@@ -5,7 +5,14 @@
  * 2.0.
  */
 
-import { EuiButton, EuiHorizontalRule, EuiSpacer, EuiText } from '@elastic/eui';
+import {
+  EuiButton,
+  EuiCard,
+  EuiCodeBlock,
+  EuiHorizontalRule,
+  EuiSpacer,
+  EuiText,
+} from '@elastic/eui';
 import {
   AllDatasetsLocatorParams,
   ALL_DATASETS_LOCATOR_ID,
@@ -151,155 +158,23 @@ export function InstallElasticAgent() {
     }
   }, [progressSucceded, refetchProgress]);
 
-  useFlowProgressTelemetry(progressData?.progress, 'system_logs');
-
-  const getCheckLogsStep = useCallback(() => {
-    const progress = progressData?.progress;
-    if (progress) {
-      const stepStatus = progress?.['logs-ingest']?.status as EuiStepStatus;
-      const title =
-        stepStatus === 'loading'
-          ? CHECK_LOGS_LABELS.loading
-          : stepStatus === 'complete'
-          ? CHECK_LOGS_LABELS.completed
-          : CHECK_LOGS_LABELS.incomplete;
-      return {
-        title,
-        status: stepStatus,
-        'data-test-subj': 'obltOnboardingCheckLogsStep',
-      };
-    }
-    return {
-      title: CHECK_LOGS_LABELS.incomplete,
-      status: 'incomplete' as const,
-    };
-  }, [progressData?.progress]);
-
-  const isInstallStarted = progressData?.progress['ea-download'] !== undefined;
-  const isInstallCompleted = progressData?.progress?.['ea-status']?.status === 'complete';
-  const autoDownloadConfigStatus = progressData?.progress?.['ea-config']?.status as EuiStepStatus;
+  const snippet = `sudo API_KEY='${apiKeyEncoded}' node ./build/index.js`;
 
   return (
-    <StepModal
+    <EuiCard
+      textAlign="left"
       title={i18n.translate(
         'xpack.observability_onboarding.installElasticAgent.stepPanel.collectSystemLogsLabel',
-        { defaultMessage: 'Collect system logs' }
+        { defaultMessage: 'Run logs auto-detection script on the host' }
       )}
-      panelFooter={[
-        <EuiButton
-          color="success"
-          fill
-          iconType="magnifyWithPlus"
-          onClick={onContinue}
-          data-test-subj="obltOnboardingExploreLogs"
-          disabled={systemIntegrationStatus === 'pending'}
-        >
-          {i18n.translate('xpack.observability_onboarding.steps.exploreLogs', {
-            defaultMessage: 'Explore logs',
-          })}
-        </EuiButton>,
-      ]}
-      panelProps={{
-        hasBorder: false,
-        color: 'transparent',
-        paddingSize: 'none',
-      }}
     >
-      <EuiText color="subdued">
-        <p>
-          {i18n.translate(
-            'xpack.observability_onboarding.systemLogs.installElasticAgent.description',
-            {
-              defaultMessage:
-                'To collect the data from your system and stream it to Elastic, you first need to install a shipping tool on the machine generating the logs. In this case, the shipping tool is an agent developed by Elastic.',
-            }
-          )}
-        </p>
-      </EuiText>
       <EuiSpacer size="m" />
-      <SystemIntegrationBanner onStatusChange={onIntegrationStatusChange} />
-      <EuiSpacer size="m" />
-      {apiKeyEncoded && onboardingId ? (
-        <ApiKeyBanner
-          payload={{ apiKeyEncoded, onboardingId }}
-          hasPrivileges
-          status={FETCH_STATUS.SUCCESS}
-        />
-      ) : (
-        monitoringRoleStatus !== FETCH_STATUS.NOT_INITIATED &&
-        monitoringRoleStatus !== FETCH_STATUS.LOADING && (
-          <ApiKeyBanner
-            payload={installShipperSetup}
-            hasPrivileges={monitoringRole?.hasPrivileges}
-            status={installShipperSetupStatus}
-            error={error}
-          />
-        )
-      )}
-      <EuiSpacer size="m" />
-      <InstallElasticAgentSteps
-        installAgentPlatformOptions={[
-          {
-            label: i18n.translate(
-              'xpack.observability_onboarding.installElasticAgent.installStep.choosePlatform.linux',
-              { defaultMessage: 'Linux' }
-            ),
-            id: 'linux-tar',
-          },
-          {
-            label: i18n.translate(
-              'xpack.observability_onboarding.installElasticAgent.installStep.choosePlatform.macOS',
-              { defaultMessage: 'MacOS' }
-            ),
-            id: 'macos',
-          },
-          {
-            label: i18n.translate(
-              'xpack.observability_onboarding.installElasticAgent.installStep.choosePlatform.windows',
-              { defaultMessage: 'Windows' }
-            ),
-            id: 'windows',
-            disableSteps: true,
-            children: (
-              <WindowsInstallStep docsLink="https://www.elastic.co/guide/en/welcome-to-elastic/current/getting-started-observability.html" />
-            ),
-          },
-        ]}
-        onSelectPlatform={(id) => setElasticAgentPlatform(id)}
-        selectedPlatform={elasticAgentPlatform}
-        installAgentCommand={getElasticAgentSetupCommand({
-          elasticAgentPlatform,
-          apiKeyEncoded,
-          apiEndpoint: setup?.apiEndpoint,
-          scriptDownloadUrl: setup?.scriptDownloadUrl,
-          elasticAgentVersion: setup?.elasticAgentVersion,
-          autoDownloadConfig: wizardState.autoDownloadConfig,
-          onboardingId,
-        })}
-        autoDownloadConfig={wizardState.autoDownloadConfig}
-        onToggleAutoDownloadConfig={onAutoDownloadConfig}
-        installAgentStatus={
-          installShipperSetupStatus === FETCH_STATUS.LOADING
-            ? 'loading'
-            : isInstallCompleted
-            ? 'complete'
-            : 'current'
-        }
-        showInstallProgressSteps={isInstallStarted}
-        installProgressSteps={
-          (progressData?.progress ?? {}) as Partial<
-            Record<ProgressStepId, { status: EuiStepStatus; message?: string }>
-          >
-        }
-        configureAgentStatus={
-          yamlConfigStatus === FETCH_STATUS.LOADING ? 'loading' : autoDownloadConfigStatus
-        }
-        configureAgentYaml={yamlConfig}
-        appendedSteps={[getCheckLogsStep()]}
-      />
+      <EuiCodeBlock language="html" isCopyable>
+        {snippet}
+      </EuiCodeBlock>
       <EuiHorizontalRule />
       <TroubleshootingLink />
-    </StepModal>
+    </EuiCard>
   );
 }
 
