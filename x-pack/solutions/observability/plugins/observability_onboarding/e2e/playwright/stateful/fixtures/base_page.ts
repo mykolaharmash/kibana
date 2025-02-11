@@ -14,6 +14,7 @@ import { AutoDetectFlowPage } from '../pom/pages/auto_detect_flow.page';
 import { KubernetesEAFlowPage } from '../pom/pages/kubernetes_ea_flow.page';
 import { OtelKubernetesFlowPage } from '../pom/pages/otel_kubernetes_flow.page';
 import { OtelKubernetesOverviewDashboardPage } from '../pom/pages/otel_kubernetes_overview_dashboard.page';
+import { FirehoseFlowPage } from '../pom/pages/firehose_flow.page';
 
 export const test = base.extend<{
   headerBar: HeaderBar;
@@ -24,6 +25,7 @@ export const test = base.extend<{
   otelKubernetesFlowPage: OtelKubernetesFlowPage;
   kubernetesOverviewDashboardPage: KubernetesOverviewDashboardPage;
   otelKubernetesOverviewDashboardPage: OtelKubernetesOverviewDashboardPage;
+  firehoseFlowPage: FirehoseFlowPage;
 }>({
   headerBar: async ({ page }, use) => {
     await use(new HeaderBar(page));
@@ -55,5 +57,9 @@ export const test = base.extend<{
 
   otelKubernetesOverviewDashboardPage: async ({ page }, use) => {
     await use(new OtelKubernetesOverviewDashboardPage(page));
+  },
+
+  firehoseFlowPage: async ({ page }, use) => {
+    await use(new FirehoseFlowPage(page));
   },
 });
