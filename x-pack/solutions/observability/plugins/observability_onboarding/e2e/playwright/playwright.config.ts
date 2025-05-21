@@ -54,19 +54,19 @@ export default defineConfig({
   },
 
   projects: [
-    {
-      name: 'auth',
-      testMatch: '*stateful/auth.ts',
-      use: {
-        viewport: { width: 1920, height: 1080 },
-        launchOptions: {
-          logger: {
-            isEnabled: () => true,
-            log: (name, severity, message) => log.info(`[${severity}] ${name} ${message}`),
-          },
-        },
-      },
-    },
+    // {
+    //   name: 'auth',
+    //   testMatch: '*stateful/auth.ts',
+    //   use: {
+    //     viewport: { width: 1920, height: 1080 },
+    //     launchOptions: {
+    //       logger: {
+    //         isEnabled: () => true,
+    //         log: (name, severity, message) => log.info(`[${severity}] ${name} ${message}`),
+    //       },
+    //     },
+    //   },
+    // },
     {
       name: 'stateful',
       testMatch: '*stateful/*.spec.ts',
