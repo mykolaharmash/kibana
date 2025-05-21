@@ -83,20 +83,5 @@ export default defineConfig({
       },
       dependencies: ['auth'],
     },
-    {
-      name: 'teardown',
-      testMatch: 'teardown.setup.ts',
-      use: {
-        viewport: { width: 1920, height: 1080 },
-        storageState: STORAGE_STATE,
-        testIdAttribute: 'data-test-subj',
-        launchOptions: {
-          logger: {
-            isEnabled: () => true,
-            log: (name, severity, message) => log.info(`[${severity}] ${name} ${message}`),
-          },
-        },
-      },
-    },
   ],
 });
