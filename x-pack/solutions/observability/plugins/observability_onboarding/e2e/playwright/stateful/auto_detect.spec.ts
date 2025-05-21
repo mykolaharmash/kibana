@@ -12,8 +12,16 @@ import { HostDetailsPage } from './pom/pages/host_details.page';
 import { assertEnv } from '../lib/assert_env';
 import { serverlessAuth } from './auth_serverless';
 
-test.beforeAll(async ({ page }) => {
-  await serverlessAuth(page);
+test.use({
+  ignoreHTTPSErrors: true,
+});
+
+test.beforeAll(async ({ browser }) => {
+  await serverlessAuth(
+    await browser.newPage({
+      storageState: undefined,
+    })
+  );
 });
 
 test.beforeEach(async ({ page }) => {

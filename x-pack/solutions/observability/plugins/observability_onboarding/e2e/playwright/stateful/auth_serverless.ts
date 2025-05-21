@@ -11,17 +11,25 @@ import { waitForOneOf } from '../lib/helpers';
 import { log } from '../lib/logger';
 import { assertEnv } from '../lib/assert_env';
 
-// const isLocalCluster = process.env.CLUSTER_ENVIRONMENT === 'local';
+const isLocalCluster = process.env.CLUSTER_ENVIRONMENT === 'local';
 
 export async function serverlessAuth(page: Page) {
   assertEnv(process.env.KIBANA_BASE_URL, 'KIBANA_BASE_URL is not defined.');
   assertEnv(process.env.KIBANA_USERNAME, 'KIBANA_USERNAME is not defined.');
   assertEnv(process.env.KIBANA_PASSWORD, 'KIBANA_PASSWORD is not defined.');
 
-  await page.goto(process.env.KIBANA_BASE_URL);
+  const loginURL = isLocalCluster
+    ? `${process.env.KIBANA_BASE_URL}/login`
+    : process.env.KIBANA_BASE_URL;
+
+  await page.goto(loginURL);
   log.info(`...waiting for login page elements to appear.`);
 
-  await page.getByLabel('Email').fill(process.env.KIBANA_USERNAME);
+  if (isLocalCluster) {
+    await page.getByLabel('Username').fill(process.env.KIBANA_USERNAME);
+  } else {
+    await page.getByLabel('Email').fill(process.env.KIBANA_USERNAME);
+  }
   await page.getByLabel('Password', { exact: true }).click();
   await page.getByLabel('Password', { exact: true }).fill(process.env.KIBANA_PASSWORD);
   await page.getByRole('button', { name: 'Log in' }).click();
