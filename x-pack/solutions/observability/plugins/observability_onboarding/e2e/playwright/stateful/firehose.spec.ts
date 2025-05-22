@@ -28,13 +28,13 @@ test('Firehose', async ({ page, onboardingHomePage, firehoseFlowPage }) => {
   await firehoseFlowPage.cliOptionButton.click();
   await firehoseFlowPage.copyToClipboardButton.click();
 
-  const clipboardData = (await page.evaluate('navigator.clipboard.readText()')) as string;
+  const snippet = (await page.evaluate('navigator.clipboard.readText()')) as string;
 
   /**
    * Ensemble story watches for the code snippet file
    * to be created and then executes it
    */
-  fs.writeFileSync(outputPath, clipboardData);
+  fs.writeFileSync(outputPath, `${snippet} --region us-west-2`);
 
   /**
    * The page waits for the browser window to loose
