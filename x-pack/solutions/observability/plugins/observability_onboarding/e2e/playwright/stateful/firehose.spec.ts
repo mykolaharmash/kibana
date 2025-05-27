@@ -37,10 +37,7 @@ test('Firehose', async ({ page, onboardingHomePage, firehoseFlowPage }) => {
    */
   fs.writeFileSync(
     outputPath,
-    snippet.replace(
-      /ParameterValue=https.+?:443/,
-      `ParameterValue=${process.env.ELASTICSEARCH_HOST.replace(/\//g, '\\/')}`
-    )
+    `${snippet}\nsleep 180\naws cloudformation describe-stacks --stack-name Elastic-Firehose --query "Stacks[0].StackStatus"`
   );
 
   /**
