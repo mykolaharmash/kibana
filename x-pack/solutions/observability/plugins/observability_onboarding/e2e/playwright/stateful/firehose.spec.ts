@@ -17,6 +17,7 @@ test.beforeEach(async ({ page }) => {
 
 test('Firehose', async ({ page, onboardingHomePage, firehoseFlowPage }) => {
   assertEnv(process.env.ARTIFACTS_FOLDER, 'ARTIFACTS_FOLDER is not defined.');
+  assertEnv(process.env.ELASTICSEARCH_HOST, 'ELASTICSEARCH_HOST is not defined.');
 
   const fileName = 'code_snippet_firehose.sh';
   const outputPath = path.join(__dirname, '..', process.env.ARTIFACTS_FOLDER, fileName);
@@ -34,7 +35,13 @@ test('Firehose', async ({ page, onboardingHomePage, firehoseFlowPage }) => {
    * Ensemble story watches for the code snippet file
    * to be created and then executes it
    */
-  fs.writeFileSync(outputPath, snippet);
+  fs.writeFileSync(
+    outputPath,
+    snippet.replace(
+      /ParameterValue=https.+?:443/,
+      `ParameterValue=${process.env.ELASTICSEARCH_HOST.replace(/\//g, '\\/')}`
+    )
+  );
 
   /**
    * The page waits for the browser window to loose
