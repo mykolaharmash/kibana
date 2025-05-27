@@ -44,7 +44,7 @@ test('Firehose', async ({ page, onboardingHomePage, firehoseFlowPage }) => {
 
   await expect(
     firehoseFlowPage.waitingForDataIndicator,
-    'Waiting for data indicator should be visible'
+    '"Waiting for data" indicator should be visible'
   ).toBeVisible();
 
   /**
