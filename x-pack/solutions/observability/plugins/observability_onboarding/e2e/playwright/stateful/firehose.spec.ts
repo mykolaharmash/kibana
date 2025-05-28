@@ -35,12 +35,7 @@ test('Firehose', async ({ page, onboardingHomePage, firehoseFlowPage }) => {
    * Ensemble story watches for the code snippet file
    * to be created and then executes it
    */
-  const debugSnippet = `
-    sleep 180
-    aws cloudformation describe-stacks --stack-name Elastic-Firehose
-    aws cloudformation describe-stack-events --stack-name Elastic-Firehose
-  `;
-  fs.writeFileSync(outputPath, `${snippet}${debugSnippet}`);
+  fs.writeFileSync(outputPath, snippet);
 
   /**
    * The page waits for the browser window to loose
