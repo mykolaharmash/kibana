@@ -37,7 +37,7 @@ test('Firehose', async ({ page, onboardingHomePage, firehoseFlowPage }) => {
    */
   fs.writeFileSync(
     outputPath,
-    `${snippet}\nsleep 180\naws cloudformation describe-stacks --stack-name Elastic-Firehose --query "Stacks[0].StackStatus"`
+    `set -x\n${snippet}\nsleep 180\naws cloudformation describe-stacks --stack-name Elastic-Firehose`
   );
 
   /**
