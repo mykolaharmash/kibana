@@ -37,8 +37,8 @@ test('Firehose', async ({ page, onboardingHomePage, firehoseFlowPage }) => {
    */
   const debugSnippet = `
     sleep 180
-    aws cloudformation describe-stacks --stack-name Elastic-Firehose > ./stack_status.txt 2>&1
-    aws cloudformation describe-stack-events --stack-name Elastic-Firehose --output text --no-paginate > ./stack_events.txt 2>&1
+    aws cloudformation describe-stacks --stack-name Elastic-Firehose
+    aws cloudformation describe-stack-events --stack-name Elastic-Firehose
   `;
   fs.writeFileSync(outputPath, `${snippet}${debugSnippet}`);
 
@@ -57,7 +57,7 @@ test('Firehose', async ({ page, onboardingHomePage, firehoseFlowPage }) => {
    * 5 minutes should be enough for the cloudformation
    * stack to be created and to start pushing data.
    */
-  await page.waitForTimeout(10 * 60000);
+  await page.waitForTimeout(5 * 60000);
 
   await expect(
     firehoseFlowPage.awsServiceReceivedDataItemList,
