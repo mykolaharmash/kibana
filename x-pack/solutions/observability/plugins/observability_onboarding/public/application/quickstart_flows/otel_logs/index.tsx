@@ -89,7 +89,7 @@ export const OtelLogsPanel: React.FC = () => {
     ? setupData?.managedOtlpServiceUrl
     : setupData?.elasticsearchUrl;
   const AGENT_CDN_BASE_URL = 'artifacts.elastic.co/downloads/beats/elastic-agent';
-  const agentVersion = setupData?.elasticAgentVersionInfo.agentVersion ?? '';
+  const agentVersion = setupData?.elasticAgentVersionInfo.agentBaseVersion ?? '';
   const urlEncodedAgentVersion = encodeURIComponent(agentVersion);
 
   const logsLocator = share.url.locators.get<LogsLocatorParams>(LOGS_LOCATOR_ID);
