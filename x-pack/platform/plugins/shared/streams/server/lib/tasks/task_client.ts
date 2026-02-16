@@ -64,6 +64,57 @@ export class TaskClient<TaskType extends string> {
     }
   }
 
+  public async getByType<TParams extends {} = {}, TPayload extends {} = {}>(
+    type: TaskType
+  ): Promise<Array<PersistedTask<TParams, TPayload>>> {
+    this.logger.debug(`Getting tasks by type ${type}`);
+
+    const response = await this.storageClient.search({
+      size: 10000,
+      track_total_hits: false,
+      query: {
+        bool: {
+          filter: [{ term: { type } }],
+        },
+      },
+    });
+
+    return response.hits.hits.map((hit) => hit._source as PersistedTask<TParams, TPayload>);
+  }
+
+  public async getStatusesByType<TParams extends {} = {}, TPayload extends {} = {}>(
+    type: TaskType
+  ): Promise<Array<TaskResult<TPayload>>> {
+    const tasks = await this.getByType<TParams, TPayload>(type);
+
+    return tasks.map((task) => {
+      switch (task.status) {
+        case TaskStatus.InProgress:
+          return isStale(task.created_at)
+            ? { id: task.id, status: TaskStatus.Stale }
+            : { id: task.id, status: task.status };
+        case TaskStatus.Failed:
+          return {
+            id: task.id,
+            status: TaskStatus.Failed,
+            error: task.task.error,
+          };
+        case TaskStatus.Completed:
+        case TaskStatus.Acknowledged:
+          return {
+            id: task.id,
+            status: task.status,
+            ...task.task.payload,
+          };
+        default:
+          return {
+            id: task.id,
+            status: task.status,
+          };
+      }
+    });
+  }
+
   /**
    * Gets the task status with stale detection for in-progress tasks.
    * Returns a normalized TaskResult with the appropriate payload for completed tasks.
@@ -73,23 +124,30 @@ export class TaskClient<TaskType extends string> {
   ): Promise<TaskResult<TPayload>> {
     const task = await this.get<TParams, TPayload>(id);
 
-    if (task.status === TaskStatus.InProgress) {
-      return isStale(task.created_at) ? { status: TaskStatus.Stale } : { status: task.status };
-    } else if (task.status === TaskStatus.Failed) {
-      return {
-        status: TaskStatus.Failed,
-        error: task.task.error,
-      };
-    } else if (task.status === TaskStatus.Completed || task.status === TaskStatus.Acknowledged) {
-      return {
-        status: task.status,
-        ...task.task.payload,
-      };
+    switch (task.status) {
+      case TaskStatus.InProgress:
+        return isStale(task.created_at)
+          ? { id, status: TaskStatus.Stale }
+          : { id, status: task.status };
+      case TaskStatus.Failed:
+        return {
+          id,
+          status: TaskStatus.Failed,
+          error: task.task.error,
+        };
+      case TaskStatus.Completed:
+      case TaskStatus.Acknowledged:
+        return {
+          id,
+          status: task.status,
+          ...task.task.payload,
+        };
+      default:
+        return {
+          id,
+          status: task.status,
+        };
     }
-
-    return {
-      status: task.status,
-    };
   }
 
   public async schedule<TParams extends {} = {}>({

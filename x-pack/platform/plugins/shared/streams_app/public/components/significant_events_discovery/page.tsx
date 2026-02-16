@@ -36,6 +36,7 @@ import { FeaturesTable } from './components/features_table/features_table';
 import { QueriesTable } from './components/queries_table/queries_table';
 import { StreamsView } from './components/streams_view/streams_view';
 import { InsightsTab } from './components/insights/tab';
+import { InsightsTaskProvider } from './components/insights_task_provider/insights_task_provider';
 
 const discoveryTabs = ['streams', 'features', 'queries', 'insights'] as const;
 type DiscoveryTab = (typeof discoveryTabs)[number];
@@ -53,9 +54,8 @@ export function SignificantEventsDiscoveryPage() {
   const router = useStreamsAppRouter();
   const { core } = useKibana();
   const aiFeatures = useAIFeatures();
-  const { getInsightsDiscoveryTaskStatus } = useInsightsDiscoveryApi(
-    aiFeatures?.genAiConnectors.selectedConnector
-  );
+  const { getInsightsDiscoveryTaskStatusList: getInsightsDiscoveryTaskStatus } =
+    useInsightsDiscoveryApi(aiFeatures?.genAiConnectors.selectedConnector);
   const [{ value: insightsTask }, getInsightsTaskStatus] = useAsyncFn(
     getInsightsDiscoveryTaskStatus
   );
@@ -235,18 +235,20 @@ export function SignificantEventsDiscoveryPage() {
         tabs={tabs}
       />
       <StreamsAppPageTemplate.Body grow>
-        {tab === 'streams' && (
-          <StreamsView
-            refreshUnbackedQueriesCount={refetch}
-            isInsightsTaskRunning={isInsightsTaskRunning}
-            onInsightsTaskScheduled={getInsightsTaskStatus}
-          />
-        )}
-        {tab === 'features' && <FeaturesTable />}
-        {tab === 'queries' && <QueriesTable />}
-        {tab === 'insights' && (
-          <InsightsTab insightsTask={insightsTask} refreshInsightsTask={getInsightsTaskStatus} />
-        )}
+        <InsightsTaskProvider>
+          {tab === 'streams' && (
+            <StreamsView
+              refreshUnbackedQueriesCount={refetch}
+              isInsightsTaskRunning={isInsightsTaskRunning}
+              onInsightsTaskScheduled={getInsightsTaskStatus}
+            />
+          )}
+          {tab === 'features' && <FeaturesTable />}
+          {tab === 'queries' && <QueriesTable />}
+          {tab === 'insights' && (
+            <InsightsTab insightsTask={insightsTask} refreshInsightsTask={getInsightsTaskStatus} />
+          )}
+        </InsightsTaskProvider>
       </StreamsAppPageTemplate.Body>
     </>
   );

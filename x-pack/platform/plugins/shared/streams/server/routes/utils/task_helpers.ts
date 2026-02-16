@@ -64,6 +64,7 @@ export async function handleTaskAction<TParams extends object, TPayload extends 
       });
 
       return {
+        id: taskId,
         status: TaskStatus.InProgress,
       };
     } catch (error) {
@@ -76,6 +77,7 @@ export async function handleTaskAction<TParams extends object, TPayload extends 
     await taskClient.cancel(taskId);
 
     return {
+      id: taskId,
       status: TaskStatus.BeingCanceled,
     };
   }
@@ -85,6 +87,7 @@ export async function handleTaskAction<TParams extends object, TPayload extends 
     const task = await taskClient.acknowledge<TParams, TPayload>(taskId);
 
     return {
+      id: taskId,
       status: TaskStatus.Acknowledged,
       ...task.task.payload,
     };

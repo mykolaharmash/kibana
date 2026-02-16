@@ -9,6 +9,7 @@ import type { TaskDefinitionRegistry } from '@kbn/task-manager-plugin/server';
 import { isInferenceProviderError } from '@kbn/inference-common';
 import type { InsightsResult } from '@kbn/streams-schema';
 import { getDeleteTaskRunResult } from '@kbn/task-manager-plugin/server/task';
+import { STREAMS_INSIGHTS_DISCOVERY_TASK_TYPE } from '@kbn/streams-schema/src/insights';
 import type { TaskContext } from '.';
 import { cancellableTask } from '../cancellable_task';
 import type { TaskParams } from '../types';
@@ -20,8 +21,6 @@ export interface InsightsDiscoveryTaskParams {
   /** When provided, only generate insights for these stream names. Otherwise all streams are used. */
   streamNames?: string[];
 }
-
-export const STREAMS_INSIGHTS_DISCOVERY_TASK_TYPE = 'streams_insights_discovery';
 
 export function createStreamsInsightsDiscoveryTask(taskContext: TaskContext) {
   return {

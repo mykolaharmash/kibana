@@ -40,6 +40,7 @@ import {
 import { StreamsTreeTable } from './tree_table';
 import type { TableRow } from './utils';
 import { useFetchStreams } from '../../hooks/use_fetch_streams';
+import { useInsightsTasksContext } from '../insights_task_provider/insights_task_provider';
 
 const datePickerStyle = css`
   .euiFormControlLayout,
@@ -178,6 +179,8 @@ export function StreamsView({
     });
   }, [onboardingStatusUpdateQueue, processStatusUpdateQueue, streamsListFetch.data]);
 
+  const { insightsTaskList, scheduleInsightsTask } = useInsightsTasksContext();
+
   const bulkScheduleOnboardingTask = async (streamList: string[]) => {
     try {
       await pMap(
@@ -227,27 +230,32 @@ export function StreamsView({
 
   const onBulkDiscoverInsightsClick = async () => {
     if (isDiscoverInsightsDisabled) return;
+
     const streamNames =
       selectedStreams.length > 0 ? selectedStreams.map((row) => row.stream.name) : undefined;
 
-    try {
-      await scheduleInsightsDiscoveryTask(streamNames);
-      setSelectedStreams([]);
-      onInsightsTaskScheduled?.();
-    } catch (error) {
-      toasts.addError(getFormattedError(error), {
-        title: i18n.translate(
-          'xpack.streams.significantEventsDiscovery.streamsTree.insightsDiscoverySchedulingFailureTitle',
-          {
-            defaultMessage: 'Failed to schedule insights discovery',
-          }
-        ),
-      });
-    }
+    scheduleInsightsTask(streamNames ?? []);
+
+    // try {
+    //   await scheduleInsightsDiscoveryTask(streamNames);
+    //   setSelectedStreams([]);
+    //   onInsightsTaskScheduled?.();
+    // } catch (error) {
+    //   toasts.addError(getFormattedError(error), {
+    //     title: i18n.translate(
+    //       'xpack.streams.significantEventsDiscovery.streamsTree.insightsDiscoverySchedulingFailureTitle',
+    //       {
+    //         defaultMessage: 'Failed to schedule insights discovery',
+    //       }
+    //     ),
+    //   });
+    // }
   };
 
   return (
     <EuiFlexGroup direction="column" gutterSize="m">
+      <pre>{JSON.stringify(insightsTaskList, undefined, 2)}</pre>
+
       <EuiFlexItem grow={false}>
         <EuiFlexGroup gutterSize="s" alignItems="center">
           <EuiFlexItem>

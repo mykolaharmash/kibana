@@ -22,42 +22,39 @@ export function useInsightsDiscoveryApi(connectorId?: string) {
 
   return useMemo(
     () => ({
-      scheduleInsightsDiscoveryTask: async (streamNames?: string[]) => {
+      scheduleInsightsDiscoveryTask: async (streamNames: string[]) => {
         await streamsRepositoryClient.fetch('POST /internal/streams/_insights/_task', {
           signal,
           params: {
             body: {
-              action: 'schedule',
               connectorId,
-              ...(streamNames !== undefined && streamNames.length > 0 ? { streamNames } : {}),
+              streamNames,
             },
           },
         });
       },
-      getInsightsDiscoveryTaskStatus: async () => {
+      getInsightsDiscoveryTaskStatusList: async (taskIds?: string[]) => {
         return streamsRepositoryClient.fetch('POST /internal/streams/_insights/_status', {
           signal,
-        });
-      },
-      cancelInsightsDiscoveryTask: async () => {
-        return streamsRepositoryClient.fetch('POST /internal/streams/_insights/_task', {
-          signal,
           params: {
             body: {
-              action: 'cancel' as const,
+              taskIds,
             },
           },
         });
       },
-      acknowledgeInsightsDiscoveryTask: async () => {
-        return streamsRepositoryClient.fetch('POST /internal/streams/_insights/_task', {
-          signal,
-          params: {
-            body: {
-              action: 'acknowledge' as const,
+      cancelInsightsDiscoveryTask: async (taskId: string) => {
+        return streamsRepositoryClient.fetch(
+          'POST /internal/streams/_insights/_task/{taskId}/cancel',
+          {
+            signal,
+            params: {
+              path: {
+                taskId,
+              },
             },
-          },
-        });
+          }
+        );
       },
     }),
     [connectorId, signal, streamsRepositoryClient]

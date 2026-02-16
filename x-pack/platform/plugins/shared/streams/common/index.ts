@@ -28,3 +28,5 @@ export {
   isKqlQueryValid,
   buildEsqlFilter,
 } from './query_helpers';
+
+export { generateInsightsTaskId } from './insights_generation';

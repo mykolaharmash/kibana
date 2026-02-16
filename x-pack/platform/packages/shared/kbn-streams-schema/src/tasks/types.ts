@@ -22,6 +22,7 @@ export enum TaskStatus {
  */
 export type TaskResult<TPayload> =
   | {
+      id: string;
       status:
         | TaskStatus.NotStarted
         | TaskStatus.InProgress
@@ -29,5 +30,5 @@ export type TaskResult<TPayload> =
         | TaskStatus.BeingCanceled
         | TaskStatus.Canceled;
     }
-  | { status: TaskStatus.Failed; error: string }
-  | ({ status: TaskStatus.Completed | TaskStatus.Acknowledged } & TPayload);
+  | { id: string; status: TaskStatus.Failed; error: string }
+  | ({ id: string; status: TaskStatus.Completed | TaskStatus.Acknowledged } & TPayload);

@@ -28,3 +28,5 @@ export interface InsightsResult {
   insights: Insight[];
   tokensUsed: ChatCompletionTokenCount;
 }
+
+export const STREAMS_INSIGHTS_DISCOVERY_TASK_TYPE = 'streams_insights_discovery';

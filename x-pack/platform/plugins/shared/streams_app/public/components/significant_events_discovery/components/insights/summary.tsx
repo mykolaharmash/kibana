@@ -44,7 +44,7 @@ export function Summary({ count, insightsTask, refreshInsightsTask }: SummaryPro
 
   const {
     scheduleInsightsDiscoveryTask,
-    getInsightsDiscoveryTaskStatus,
+    getInsightsDiscoveryTaskStatusList: getInsightsDiscoveryTaskStatus,
     acknowledgeInsightsDiscoveryTask,
     cancelInsightsDiscoveryTask,
   } = useInsightsDiscoveryApi(aiFeatures?.genAiConnectors.selectedConnector);
